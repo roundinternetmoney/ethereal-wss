@@ -55,11 +55,9 @@ func NewClient(parent context.Context, env Environment) *Client {
 
 func (c *Client) Subscribe(ctx context.Context, event pb.EventType, to string) (err error) {
 	var bytes []byte
-	fmt.Println(to)
 	if bytes, err = event.MarshalIntent(to, pb.Sub); err != nil {
 		return
 	}
-	fmt.Println(string(bytes))
 	if err = c.Req(ctx, bytes); err != nil {
 		c.subscriptions = append(c.subscriptions, event)
 	}
