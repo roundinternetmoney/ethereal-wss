@@ -22,8 +22,6 @@ version:
 tag:
 	git tag -a v$(NEW_VERSION) -m "Release v$(NEW_VERSION)"
 	git push origin v$(NEW_VERSION)
-	git commit -m "Bump version to v$(NEW_VERSION)"
-	git push	
 
 release: wss tag
 	gh release create v$(NEW_VERSION) \
