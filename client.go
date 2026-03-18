@@ -2,8 +2,7 @@ package etherealWss
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
+	"errors"
 	"log"
 	"sync"
 	"time"
@@ -87,12 +86,6 @@ func (c *Client) Req(ctx context.Context, payload []byte) (err error) {
 	return c.Con.Write(ctx, websocket.MessageBinary, payload)
 }
 
-type wssMsg struct {
-	Event string          `json:"e"`
-	Ts    int64           `json:"t"`
-	Data  json.RawMessage `json:"data"`
-}
-
 func (c *Client) Listen(parent context.Context) error {
 	ctx, cancel := context.WithCancelCause(parent)
 	defer cancel(nil)
@@ -112,10 +105,10 @@ func (c *Client) Listen(parent context.Context) error {
 		if err := c.pbOpts.Unmarshal(data, &e); err != nil {
 			if status := new(pb.WebsocketStatus); c.pbOpts.Unmarshal(data, status) == nil {
 				if !status.Ok {
-					fmt.Println(status.Code)
+					return errors.New(status.String())
 				}
 			} else {
-				panic(err)
+				return err
 			}
 			continue
 		}
